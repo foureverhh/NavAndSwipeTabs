@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_photo"
+        android:icon="@drawable/ic_photo_black_24dp"
+        android:title="@string/nav_photo"/>
+    <item android:id="@+id/nav_text"
+        android:icon="@drawable/ic_photo_black_24dp"
+        android:title="@string/nav_text"/>
+    <item android:id="@+id/nav_history"
+        android:icon="@drawable/ic_photo_black_24dp"
+        android:title="@string/nav_history"/>
+
+</menu>
