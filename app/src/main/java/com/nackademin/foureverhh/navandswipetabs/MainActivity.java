@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity
 
         bottomNavigationView = findViewById(R.id.nav_bottom_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(navBottomListener);
+        setFragment(new PhotoFragment());
+
     }
 
 

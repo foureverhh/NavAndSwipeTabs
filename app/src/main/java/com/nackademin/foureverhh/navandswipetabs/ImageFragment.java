@@ -2,10 +2,13 @@ package com.nackademin.foureverhh.navandswipetabs;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -13,11 +16,16 @@ import android.view.ViewGroup;
  */
 public class ImageFragment extends Fragment {
 
-
+    TextView textView;
     public ImageFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        textView = view.findViewById(R.id.image_fragment_text);
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

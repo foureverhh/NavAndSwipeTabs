@@ -28,26 +28,23 @@ public class PhotoFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        tabLayout = view.findViewById(R.id.tabs);
-        sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
-        viewPager = view.findViewById(R.id.viewPager);
-
-        viewPager.addOnPageChangeListener(new TabLayout
-                .TabLayoutOnPageChangeListener(tabLayout));
-
-        tabLayout.addOnTabSelectedListener(new TabLayout
-                .ViewPagerOnTabSelectedListener(viewPager));
-        super.onCreate(savedInstanceState);
-    }
-
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_photo, container, false);
+        View rootView =  inflater.inflate(R.layout.fragment_photo, container, false);
+        tabLayout = rootView.findViewById(R.id.tabs);
+        sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+        viewPager = rootView.findViewById(R.id.viewPager);
+
+        //tabLayout.setupWithViewPager(viewPager);
+        viewPager.addOnPageChangeListener(new TabLayout
+                .TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout                         
+                .ViewPagerOnTabSelectedListener(viewPager));
+
+        viewPager.setAdapter(sectionsPagerAdapter);
+        return  rootView;
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter
@@ -59,12 +56,21 @@ public class PhotoFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return null;
+            Fragment fragment =  null;
+            switch (position){
+                case 0:
+                    fragment = new CameraFragment();
+                    break;
+                case 1:
+                    fragment = new ImageFragment();
+                    break;
+            }
+            return fragment;
         }
 
         @Override
         public int getCount() {
-            return 0;
+            return 2;
         }
     }
 }
