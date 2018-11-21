@@ -6,4 +6,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="camera_input">Camera</string>
+    <string name="photo_library_input">Photo Library</string>
 </resources>
