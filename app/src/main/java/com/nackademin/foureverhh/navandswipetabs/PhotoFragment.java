@@ -9,9 +9,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.Objects;
 
 
 /**
@@ -36,7 +39,6 @@ public class PhotoFragment extends Fragment {
         sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         viewPager = rootView.findViewById(R.id.viewPager);
 
-        //tabLayout.setupWithViewPager(viewPager);
         viewPager.addOnPageChangeListener(new TabLayout
                 .TabLayoutOnPageChangeListener(tabLayout));
 
@@ -44,6 +46,9 @@ public class PhotoFragment extends Fragment {
                 .ViewPagerOnTabSelectedListener(viewPager));
 
         viewPager.setAdapter(sectionsPagerAdapter);
+        //Hide toolbar when it is Photo fragment and
+        // child fragments under photo fragment
+        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
         return  rootView;
     }
 
@@ -73,4 +78,6 @@ public class PhotoFragment extends Fragment {
             return 2;
         }
     }
+
+
 }

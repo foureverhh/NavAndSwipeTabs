@@ -18,14 +18,15 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity
 {
-
+    Toolbar toolbar;
     BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         bottomNavigationView = findViewById(R.id.nav_bottom_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(navBottomListener);
         setFragment(new PhotoFragment());
@@ -42,14 +43,18 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId())
             {
                 case R.id.nav_photo:
+
+
                     fragment = new PhotoFragment();
                     setFragment(fragment);
                     break;
                 case R.id.nav_text:
+                    getSupportActionBar().show();
                     fragment = new TextFragment();
                     setFragment(fragment);
                     break;
                 case R.id.nav_history:
+                    getSupportActionBar().show();
                     fragment = new HistoryFragment();
                     setFragment(fragment);
                     break;
