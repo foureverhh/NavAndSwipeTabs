@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nackademin.foureverhh.navandswipetabs">
+
     <uses-feature android:name="android.hardware.CAMERA"
         android:required="true"/>
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,7 +18,7 @@
         <!--To set provider-->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.android.fileProvider"
+            android:authorities="com.nackademin.foureverhh.navandswipetabs.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
