@@ -1,6 +1,7 @@
 package com.nackademin.foureverhh.navandswipetabs;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,9 @@ public class ImageFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_image, container, false);
         photoFromGallery = (ImageView) rootView.findViewById(R.id.get_photo_from_gallery);
         textFromPhotoGallery =(TextView) rootView.findViewById(R.id.text_from_photo_gallery);
+        textFromPhotoGallery.setMovementMethod(new ScrollingMovementMethod());
         buttonGetTextGallery =(Button) rootView.findViewById(R.id.btn_get_text_photo_gallery);
+
         buttonGetTextGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +59,7 @@ public class ImageFragment extends Fragment {
                 startActivityForResult(
                         getPhotoFromGallery.createChooser(getPhotoFromGallery,"Select file")
                         ,GET_PHOTO_FROM_GALLERY);
+
             }
         });
 
@@ -69,11 +74,22 @@ public class ImageFragment extends Fragment {
                 InputStream inputStream = getActivity()
                         .getContentResolver()
                         .openInputStream(imageUri);
-                Bitmap originBitmap = BitmapFactory.decodeStream(inputStream);
+                final Bitmap originBitmap = BitmapFactory.decodeStream(inputStream);
                 Bitmap resizedBitmap = ScalePhoto.scaleDownPhoto(originBitmap
                         , 500
                         , false);
                 photoFromGallery.setImageBitmap(resizedBitmap);
+
+
+                textFromPhotoGallery.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String text = TextRecognition
+                                .textRecognize(getActivity()
+                                        .getApplicationContext(),originBitmap);
+                        textFromPhotoGallery.setText(text);
+                    }
+                });
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

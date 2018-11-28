@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,12 +59,16 @@ public class CameraFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
         // Inflate the layout for this fragment
         textView = rootView.findViewById(R.id.camera_fragment_text);
+        textView.setMovementMethod(new ScrollingMovementMethod());
         imageView = rootView.findViewById(R.id.camera_image);
         button = rootView.findViewById(R.id.btn_text_from_camera);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
+                Bitmap sourceBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                //String textForView = TextRecognition.textRecognize(getActivity(),sourceBitmap);
+                //textView.setText(textForView);
             }
         });
         return rootView;
@@ -102,6 +109,8 @@ public class CameraFragment extends Fragment {
 
         if(context != null)
             storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                    //context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
             File image = File.createTempFile(
                     imageFileName,
@@ -128,8 +137,11 @@ public class CameraFragment extends Fragment {
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        getActivity().sendBroadcast(mediaScanIntent);
+        if(getActivity() != null)
+            getActivity().sendBroadcast(mediaScanIntent);
         Log.e("It runs here"," in gallery add");
+        if(contentUri != null)
+            Log.e("Photo sent to gallery"," is not empty");
     }
 
     private void setPic(){
@@ -151,4 +163,5 @@ public class CameraFragment extends Fragment {
         imageView.setImageBitmap(bitmap);
         Log.e("It runs here"," in setPic");
     }
+
 }
