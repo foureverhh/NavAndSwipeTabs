@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +22,24 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.services.vision.v1.Vision;
+import com.google.api.services.vision.v1.VisionRequestInitializer;
+import com.google.api.services.vision.v1.model.AnnotateImageRequest;
+import com.google.api.services.vision.v1.model.BatchAnnotateImagesRequest;
+import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
+import com.google.api.services.vision.v1.model.Feature;
+import com.google.api.services.vision.v1.model.Image;
+import com.google.api.services.vision.v1.model.TextAnnotation;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import org.apache.commons.codec.binary.Base64;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -71,16 +90,21 @@ public class ImageFragment extends Fragment {
         if(requestCode == GET_PHOTO_FROM_GALLERY && resultCode == RESULT_OK){
             Uri imageUri = data.getData();
             try {
-                InputStream inputStream = getActivity()
+                final InputStream inputStream = getActivity()
                         .getContentResolver()
                         .openInputStream(imageUri);
-                final Bitmap originBitmap = BitmapFactory.decodeStream(inputStream);
+                Bitmap originBitmap = BitmapFactory.decodeStream(inputStream);
                 Bitmap resizedBitmap = ScalePhoto.scaleDownPhoto(originBitmap
                         , 500
                         , false);
                 photoFromGallery.setImageBitmap(resizedBitmap);
+                //TextRecognition.textRecognize(textFromPhotoGallery,inputStream);
+                //textFromPhotoGallery.setText(Arrays.toString(texts).replaceAll("\\[|\\]", ""));
 
+                //Google Cloud Vision API to get text
+               // getText(inputStream);
 
+/*
                 textFromPhotoGallery.post(new Runnable() {
                     @Override
                     public void run() {
@@ -90,11 +114,69 @@ public class ImageFragment extends Fragment {
                         textFromPhotoGallery.setText(text);
                     }
                 });
-
+*/
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+/*
+    private void getText(final InputStream sourceInputStream){
+        //Initialize an instance of Vision client
+        Vision.Builder visionBuilder = new Vision.Builder(
+                new NetHttpTransport(),
+                new AndroidJsonFactory(),
+                null
+        );
+
+        visionBuilder.setVisionRequestInitializer(
+                new VisionRequestInitializer("AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8"));
+
+        final Vision vision = visionBuilder.build();
+        final String[] textInImage = {};
+        //Create new thread to handle text recognition
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                //Convert image inputStream to Base64 string
+                byte[] photoData = {};
+                try {
+                    photoData = IOUtils.toByteArray(sourceInputStream);
+                    if(photoData == null)
+                        Log.e("photoData"," is null");
+                    Image inputImage = new Image();
+                    inputImage.encodeContent(photoData);
+                    //Make a Request and get Response
+                    //byte[] inputImage = org.apache.commons.codec.binary.Base64.encodeBase64(photoData);
+                    Feature textFeature = new Feature();
+                    textFeature.setType("TEXT_DETECTION");
+
+                    AnnotateImageRequest request = new AnnotateImageRequest();
+                    request.setImage(inputImage);
+                    request.setFeatures(Arrays.asList(textFeature));
+
+                    BatchAnnotateImagesRequest batchRequest =
+                            new BatchAnnotateImagesRequest();
+                    batchRequest.setRequests(Arrays.asList(request));
+
+
+                    BatchAnnotateImagesResponse batchResponse =
+                            vision.images().annotate(batchRequest).execute();
+
+                    //Use the response
+                    TextAnnotation text = batchResponse.getResponses().get(0)
+                            .getFullTextAnnotation();
+                    textFromPhotoGallery.setText(text.getText()) ;
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+    }
+    */
 }
