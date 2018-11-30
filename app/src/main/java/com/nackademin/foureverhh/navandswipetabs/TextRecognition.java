@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-
+//Followed this: https://code.tutsplus.com/tutorials/how-to-use-the-google-cloud-vision-api-in-android-apps--cms-29009
 public class TextRecognition {
 
     public static void textRecognize(final TextView textView,final InputStream sourceInputStream){

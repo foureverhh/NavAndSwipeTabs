@@ -98,23 +98,58 @@ public class ImageFragment extends Fragment {
                         , 500
                         , false);
                 photoFromGallery.setImageBitmap(resizedBitmap);
-                //TextRecognition.textRecognize(textFromPhotoGallery,inputStream);
-                //textFromPhotoGallery.setText(Arrays.toString(texts).replaceAll("\\[|\\]", ""));
 
-                //Google Cloud Vision API to get text
-               // getText(inputStream);
+                //Initialize an instance of Vision client
+                Vision.Builder visionBuilder = new Vision.Builder(
+                        new NetHttpTransport(),
+                        new AndroidJsonFactory(),
+                        null
+                );
 
-/*
-                textFromPhotoGallery.post(new Runnable() {
+                visionBuilder.setVisionRequestInitializer(
+                        new VisionRequestInitializer("AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8"));
+
+                final Vision vision = visionBuilder.build();
+                final String[] textInImage = {};
+                //Create new thread to handle text recognition
+                AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                        String text = TextRecognition
-                                .textRecognize(getActivity()
-                                        .getApplicationContext(),originBitmap);
-                        textFromPhotoGallery.setText(text);
+                        //Convert image inputStream to Base64 string
+                        byte[] photoData = {};
+                        try {
+                            photoData = IOUtils.toByteArray(inputStream);
+                            if(photoData == null)
+                                Log.e("photoData"," is null");
+                            Image inputImage = new Image();
+                            inputImage.encodeContent(photoData);
+                            //Make a Request and get Response
+                            //byte[] inputImage = org.apache.commons.codec.binary.Base64.encodeBase64(photoData);
+                            Feature textFeature = new Feature();
+                            textFeature.setType("TEXT_DETECTION");
+
+                            AnnotateImageRequest request = new AnnotateImageRequest();
+                            request.setImage(inputImage);
+                            request.setFeatures(Arrays.asList(textFeature));
+
+                            BatchAnnotateImagesRequest batchRequest =
+                                    new BatchAnnotateImagesRequest();
+                            batchRequest.setRequests(Arrays.asList(request));
+
+
+                            BatchAnnotateImagesResponse batchResponse = vision.images().annotate(batchRequest).execute();
+                            //Vision.Images.Annotate batchRequest = vision.images().annotate(batchRequest);
+                            //Use the response
+                            TextAnnotation text = batchResponse.getResponses().get(0)
+                                    .getFullTextAnnotation();
+                            textFromPhotoGallery.setText(text.getText()) ;
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
-*/
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -161,9 +196,8 @@ public class ImageFragment extends Fragment {
                     batchRequest.setRequests(Arrays.asList(request));
 
 
-                    BatchAnnotateImagesResponse batchResponse =
-                            vision.images().annotate(batchRequest).execute();
-
+                    BatchAnnotateImagesResponse batchResponse = vision.images().annotate(batchRequest).execute();
+                    //Vision.Images.Annotate batchRequest = vision.images().annotate(batchRequest);
                     //Use the response
                     TextAnnotation text = batchResponse.getResponses().get(0)
                             .getFullTextAnnotation();
@@ -173,10 +207,8 @@ public class ImageFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }
         });
     }
-    */
+*/
 }
