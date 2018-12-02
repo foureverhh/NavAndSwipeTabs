@@ -10,8 +10,10 @@ import com.google.android.gms.auth.UserRecoverableAuthException;
 
 import java.io.IOException;
 
+/*
 // https://medium.com/iquii/quick-look-at-google-cloud-vision-api-on-android-66d87d08943
 public class GetOAuthToken extends AsyncTask {
+
     Activity mActivity;
     Account mAccount;
     int mRequestCode;
@@ -40,6 +42,7 @@ public class GetOAuthToken extends AsyncTask {
         return null;
     }
 
+
     @Override
     protected Object doInBackground(Object[] objects) {
         try {
@@ -52,4 +55,7 @@ public class GetOAuthToken extends AsyncTask {
         }
         return null;
     }
+
+
 }
+*/

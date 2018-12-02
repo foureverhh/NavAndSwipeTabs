@@ -13,4 +13,8 @@
     <string name="camera_fragment_text">Camera Fragment</string>
     <string name="photo_from_gallery">Photo from gallery</string>
     <string name="get_photo_and_text">Get photo and text</string>
+    <string name="text_wanted">Paste what you want to find</string>
+    <string name="test_fragment">Test Fragment</string>
+    <string name="auto_fill_hints">Input a text</string>
+    <string name="search_on_wikepedia">Search on WikePedia</string>
 </resources>
