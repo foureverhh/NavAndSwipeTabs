@@ -8,8 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+
 import com.google.api.client.http.javanet.NetHttpTransport;
+/*
 import com.google.api.services.vision.v1.Vision;
 import com.google.api.services.vision.v1.VisionRequestInitializer;
 import com.google.api.services.vision.v1.model.AnnotateImageRequest;
@@ -18,7 +19,7 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.google.api.services.vision.v1.model.TextAnnotation;
-
+ */
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.List;
 
 //Followed this: https://code.tutsplus.com/tutorials/how-to-use-the-google-cloud-vision-api-in-android-apps--cms-29009
 public class TextRecognition {
-
+/*
     public static void textRecognize(final TextView textView,final InputStream sourceInputStream){
         if(sourceInputStream == null)
             Log.e("InputStream"," is null");
@@ -86,7 +87,7 @@ public class TextRecognition {
             }
         });
 
-
+*/
 
     /*
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
@@ -106,6 +107,6 @@ public class TextRecognition {
         Log.e("It runs ","into text recognize");
         Log.e("Text is: ",stringBuilder.toString());
        return stringBuilder.toString();
-       */
-    }
+      */
+//    }
 }

@@ -4,9 +4,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.os.AsyncTask;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
+
 
 import java.io.IOException;
 

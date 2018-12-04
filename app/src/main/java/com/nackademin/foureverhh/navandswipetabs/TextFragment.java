@@ -88,22 +88,14 @@ public class TextFragment extends Fragment {
 
                     JSONObject myResponse = new JSONObject(response.toString());
                     JSONObject parseObject = myResponse.getJSONObject("parse");
-
-
-                        JSONObject wikiTextObject = parseObject.getJSONObject("wikitext");
-                        final String textToShow = wikiTextObject.getString("*");
-
-                        textView.post(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                    textView.setText(textToShow);
-
-
-                            }
-                        });
-
-
+                    JSONObject wikiTextObject = parseObject.getJSONObject("wikitext");
+                    final String textToShow = wikiTextObject.getString("*");
+                    textView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView.setText(textToShow);
+                        }
+                    });
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
 

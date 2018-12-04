@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId())
             {
                 case R.id.nav_photo:
-
-
                     fragment = new PhotoFragment();
                     setFragment(fragment);
                     break;

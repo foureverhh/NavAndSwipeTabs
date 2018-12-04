@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/INDEX.LIST'
+    }
 }
 
 dependencies {
@@ -27,7 +31,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
+/*
     //Access Google Cloud Vision API by Google API Client
     implementation 'com.google.api-client:google-api-client-android:1.22.0'
     implementation 'com.google.apis:google-api-services-vision:v1-rev357-1.22.0'
@@ -48,7 +52,11 @@ dependencies {
     implementation ('com.google.http-client:google-http-client-gson:1.20.0') {
         exclude module: 'httpclient'
     }
-
-
-
+    */
+    //implementation 'com.google.api-client:google-api-client-android:1.22.0'
+    //implementation 'com.google.apis:google-api-services-vision:v1-rev357-1.22.0'
+    implementation 'com.google.cloud:google-cloud-vision:1.53.0'
+    implementation 'com.google.cloud:google-cloud-storage:1.53.0'
+    //To simplify file I/O operations, implementation Apache Commons IO
+    implementation 'commons-io:commons-io:2.5'
 }

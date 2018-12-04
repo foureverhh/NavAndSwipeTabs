@@ -22,26 +22,48 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.services.vision.v1.Vision;
-import com.google.api.services.vision.v1.VisionRequestInitializer;
-import com.google.api.services.vision.v1.model.AnnotateImageRequest;
-import com.google.api.services.vision.v1.model.BatchAnnotateImagesRequest;
-import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
-import com.google.api.services.vision.v1.model.Feature;
-import com.google.api.services.vision.v1.model.Image;
-import com.google.api.services.vision.v1.model.TextAnnotation;
 
 import org.apache.commons.io.IOUtils;
+
+
+import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
+import com.google.cloud.vision.v1.Block;
+import com.google.cloud.vision.v1.Image;
+
+import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.cloud.vision.v1.Page;
+import com.google.cloud.vision.v1.Paragraph;
+import com.google.cloud.vision.v1.Symbol;
+import com.google.cloud.vision.v1.TextAnnotation;
+import com.google.cloud.vision.v1.Word;
+import com.google.protobuf.ByteString;
+
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+
+import java.util.ArrayList;
+;
+import java.util.List;
+import com.google.cloud.vision.v1.AnnotateImageRequest;
+import com.google.cloud.vision.v1.AnnotateImageResponse;
+
+import com.google.cloud.vision.v1.EntityAnnotation;
+import com.google.cloud.vision.v1.Feature;
+import com.google.cloud.vision.v1.Feature.Type;
+import com.google.cloud.vision.v1.Image;
+import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.protobuf.ByteString;
+
+
 import org.apache.commons.codec.binary.Base64;
 
+
+
 import static android.app.Activity.RESULT_OK;
+import static com.google.api.Page.newBuilder;
 
 
 /**
@@ -86,76 +108,94 @@ public class ImageFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == GET_PHOTO_FROM_GALLERY && resultCode == RESULT_OK){
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == GET_PHOTO_FROM_GALLERY && resultCode == RESULT_OK)
+        {
             Uri imageUri = data.getData();
-            try {
+            try
+            {
                 final InputStream inputStream = getActivity()
                         .getContentResolver()
                         .openInputStream(imageUri);
+
                 Bitmap originBitmap = BitmapFactory.decodeStream(inputStream);
                 Bitmap resizedBitmap = ScalePhoto.scaleDownPhoto(originBitmap
                         , 500
                         , false);
                 photoFromGallery.setImageBitmap(resizedBitmap);
-
-                //Initialize an instance of Vision client
-                Vision.Builder visionBuilder = new Vision.Builder(
-                        new NetHttpTransport(),
-                        new AndroidJsonFactory(),
-                        null
-                );
-
-                visionBuilder.setVisionRequestInitializer(
-                        new VisionRequestInitializer("AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8"));
-
-                final Vision vision = visionBuilder.build();
-                final String[] textInImage = {};
-                //Create new thread to handle text recognition
                 AsyncTask.execute(new Runnable() {
                     @Override
-                    public void run() {
-                        //Convert image inputStream to Base64 string
-                        byte[] photoData = {};
+                    public void run()
+                    {
                         try {
-                            photoData = IOUtils.toByteArray(inputStream);
-                            if(photoData == null)
-                                Log.e("photoData"," is null");
-                            Image inputImage = new Image();
-                            inputImage.encodeContent(photoData);
-                            //Make a Request and get Response
-                            //byte[] inputImage = org.apache.commons.codec.binary.Base64.encodeBase64(photoData);
-                            Feature textFeature = new Feature();
-                            textFeature.setType("TEXT_DETECTION");
+                            //Create a vision client
+                            ImageAnnotatorClient vision = ImageAnnotatorClient.create();
+                            //Encode image to Base64 format
+                            byte[] imageBytes = IOUtils.toByteArray(inputStream);
+                            byte[] imageBase64 = Base64.encodeBase64(imageBytes);
+                            ByteString imgBytes = ByteString.copyFrom(imageBase64);
+                            //Create request
+                            List<AnnotateImageRequest> requests = new ArrayList<>();
+                            Image img = Image.newBuilder().setContent(imgBytes).build();
+                            Feature feat = Feature.newBuilder().
+                                    setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
+                            AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
+                                    .addFeatures(feat)
+                                    .setImage(img)
+                                    .build();
+                            requests.add(request);
+                            //parse response
+                            BatchAnnotateImagesResponse response = vision
+                                    .batchAnnotateImages(requests);
+                            List<AnnotateImageResponse> responses = response.getResponsesList();
+                            vision.close();
 
-                            AnnotateImageRequest request = new AnnotateImageRequest();
-                            request.setImage(inputImage);
-                            request.setFeatures(Arrays.asList(textFeature));
-
-                            BatchAnnotateImagesRequest batchRequest =
-                                    new BatchAnnotateImagesRequest();
-                            batchRequest.setRequests(Arrays.asList(request));
-
-
-                            BatchAnnotateImagesResponse batchResponse = vision.images().annotate(batchRequest).execute();
-                            //Vision.Images.Annotate batchRequest = vision.images().annotate(batchRequest);
-                            //Use the response
-                            TextAnnotation text = batchResponse.getResponses().get(0)
-                                    .getFullTextAnnotation();
-                            textFromPhotoGallery.setText(text.getText()) ;
-
-
+                            String textExtracted = "";
+                            for(AnnotateImageResponse res: responses){
+                                TextAnnotation annotation = res.getFullTextAnnotation();
+                                for(Page page:annotation.getPagesList()){
+                                    String pageText = "";
+                                    for(Block block : page.getBlocksList()) {
+                                        String blockText = "";
+                                        for (Paragraph para : block.getParagraphsList()) {
+                                            String paraText = "";
+                                            for (Word word : para.getWordsList()) {
+                                                String wordText = "";
+                                                for (Symbol symbol : word.getSymbolsList()) {
+                                                    wordText = wordText + symbol.getText();
+                                                }
+                                                paraText = pageText+wordText;
+                                            }
+                                            blockText=blockText+paraText;
+                                        }
+                                        pageText=pageText+blockText;
+                                    }
+                                }
+                                textExtracted = textExtracted+annotation.getText();
+                            }
+                            final String finalTextExtracted = textExtracted;
+                            //Show result on text view
+                            textFromPhotoGallery.post(new Runnable() {
+                              @Override
+                              public void run() {
+                                  textFromPhotoGallery.setText(finalTextExtracted);
+                              }
+                          });
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 });
-            } catch (FileNotFoundException e) {
+            }catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
         }
-        super.onActivityResult(requestCode, resultCode, data);
+            super.onActivityResult(requestCode, resultCode, data);
     }
+
+}
 /*
     private void getText(final InputStream sourceInputStream){
         //Initialize an instance of Vision client
@@ -211,4 +251,57 @@ public class ImageFragment extends Fragment {
         });
     }
 */
-}
+
+/*
+                //Initialize an instance of Vision client
+                Vision.Builder visionBuilder = new Vision.Builder(
+                        new NetHttpTransport(),
+                        new AndroidJsonFactory(),
+                        null
+                );
+
+                visionBuilder.setVisionRequestInitializer(
+                        new VisionRequestInitializer("AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8"));
+
+                final Vision vision = visionBuilder.build();
+                final String[] textInImage = {};
+                //Create new thread to handle text recognition
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Convert image inputStream to Base64 string
+                        byte[] photoData = {};
+                        try {
+                            photoData = IOUtils.toByteArray(inputStream);
+                            if(photoData == null)
+                                Log.e("photoData"," is null");
+                            Image inputImage = new Image();
+                            inputImage.encodeContent(photoData);
+                            //Make a Request and get Response
+                            //byte[] inputImage = org.apache.commons.codec.binary.Base64.encodeBase64(photoData);
+                            Feature textFeature = new Feature();
+                            textFeature.setType("TEXT_DETECTION");
+
+                            AnnotateImageRequest request = new AnnotateImageRequest();
+                            request.setImage(inputImage);
+                            request.setFeatures(Arrays.asList(textFeature));
+
+                            BatchAnnotateImagesRequest batchRequest =
+                                    new BatchAnnotateImagesRequest();
+                            batchRequest.setRequests(Arrays.asList(request));
+
+
+                            BatchAnnotateImagesResponse batchResponse = vision.images().annotate(batchRequest).execute();
+                            //Vision.Images.Annotate batchRequest = vision.images().annotate(batchRequest);
+                            //Use the response
+                            TextAnnotation text = batchResponse.getResponses().get(0)
+                                    .getFullTextAnnotation();
+                            textFromPhotoGallery.setText(text.getText()) ;
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+               */
