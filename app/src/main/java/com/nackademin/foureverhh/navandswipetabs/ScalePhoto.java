@@ -2,7 +2,7 @@ package com.nackademin.foureverhh.navandswipetabs;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-
+//To scale the image shown on the
 public class ScalePhoto {
 
     public static Bitmap scaleDownPhoto(Bitmap sourceBitmap, int desiredPixels, boolean keepOriginBitmap){

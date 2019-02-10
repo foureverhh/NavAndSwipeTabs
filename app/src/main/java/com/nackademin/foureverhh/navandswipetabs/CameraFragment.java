@@ -26,11 +26,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessControlException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -94,7 +96,8 @@ public class CameraFragment extends Fragment {
                             "com.nackademin.foureverhh.navandswipetabs.fileprovider",
                 photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
-                    startActivityForResult(takePictureIntent,REQUEST_TAKE_PHOTO);
+                    //startActivityForResult(takePictureIntent,REQUEST_TAKE_PHOTO);
+                    startActivityForResult(Intent.createChooser(takePictureIntent, "Select a photo"),REQUEST_TAKE_PHOTO);
                 }
             }
         }
@@ -120,6 +123,7 @@ public class CameraFragment extends Fragment {
         //Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         Log.e("Path is ",mCurrentPhotoPath);
+        //galleryAddImage();
         return image;
     }
 
@@ -162,6 +166,16 @@ public class CameraFragment extends Fragment {
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
         imageView.setImageBitmap(bitmap);
         Log.e("It runs here"," in setPic");
+        String credentialsPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+        Log.e("Path is"," : "+credentialsPath);
+
+        InputStream credentialsStream = null;
+        File credentialsFile = new File("C:\\test");
+        Log.e("New path ", "is "+credentialsFile.getPath());
+        if (!credentialsFile.isFile()) {
+            Log.e("File is", "false");
+            // Path will be put in the message from the catch block below
+        }
     }
 
 }

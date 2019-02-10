@@ -1,5 +1,6 @@
 package com.nackademin.foureverhh.navandswipetabs;
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
@@ -12,9 +13,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.system.ErrnoException;
+import android.system.Os;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import java.lang.System;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -23,6 +27,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        try {
+            Os.setenv("GOOGLE_APPLICATION_CREDENTIALS", "app\\credential.json", true);
+        } catch (ErrnoException e) {
+            e.printStackTrace();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
