@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "orcandtranslate181101",
+  "private_key_id": "4f556ed8b8ece2495aeb6c03ae8a3e9774dc593f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC4Fn8ndzv6SvRG\nBLTWB1Fv/bZLiX1jnS5oXXM/ajRgXX9k4rYK5Dp+vdkJOlGX/xswi9j8iTsLg8By\n/jYpG0uZjz3Mh7vMW9hGmVK0Es+8TYe6RUUZ1tg6HprepLFRyO4j1l8TFXb2bzsX\n8aEJe0ESRjXFbbAW6XAEgW7FVcv4WYrIrrkuhWXz6zSyGCrF/SIJf74m+l7F1G7j\nmwVvYo32Tl28JJz2+d+bwizTfgkYBm8muniXdJGq/+Dub2THaZ4kbfXyS1tOShLo\nRfCu80QTuFv19LJPbIQJR4e6IN7HLpE/YdRHMeLWho4gGHqBuvigy0shRW1jzsO3\nrq/6z2ohAgMBAAECgf8GBbZjNCNiLNGQ+NZxqguf/kzYa8cOWzYJdAUxLehIvsZM\nJp6N/KltPAi9pIrGzjG1hN20ZUjpN4Y0PNzIu3vdqjH7XvVl2htZM+rguTzSjDbE\ngT+heMXaIOYwInMqmcgwo/K4TRt3NGxafC0ogj++uU1JCC2akkh33UQicIwbs8P5\n+tYNvDkMPEdMS6EvkFsyPRajia+gLjdhySCyzblHFfWY64r10xnKnX3XCt9DuPa7\n8C0qjiS2AnG9ZcaLNz+archBa09lhqgGSxcLKbPJt9Jtj9M2SG5cN74Xd4GCgegK\nu+fQ+zitSM2MlvWH8AVM272DLc0ykoWjwRhxNwECgYEA6FOu1cYrAvFUV724x8iJ\nQCz2FuJo/pirnPTJVByAK7/dKodG7Y9oHEA0g8jvBv9e2IE2pTieWC4pMzcesex1\nnyO785qRpqIirJRCcIXwuJZsYJ4vU7X6FYHtJEkiEc4zVY20e1NReIocX55shozv\nHoRYPLf8IUmXRr5520NhzmECgYEAyth8EDwkFZUOzKWx1jDZwvwGrtW5HgsHcH/z\nyLwlt5vJegbhCvFaZ+3JyPo8GxmVJVhFmq+iuub4JC7GrQFs+QqPRU2/VvXwSgki\nYsHBtwV2eMog+obc3MeUYaAWkI2WoVlTQH0Q7wOkHKspyg7hMl1HycOjCxpAD1Qa\nie7ls8ECgYEAwV4dT7pvxDQ+4gR7znTfn7WMYcGyZ+2EMNAg3cwW9dLsbuBHLaTF\nn3Xk/6b3I5jbRVJOvDeiu3w4OHNxLd/Eil8AqaIGBm4+c+u2XNduYwR4UfZ3J7J3\n4vzP9vqTy8QXP+cAyACx96TkNsWySE73GyxGEMuFo+MPcQdKfy/XMSECgYBsmIWi\n82+mFkz8BuE0eKa8mszBIS6gBOuQsQ/EseXHbKHqsHAeuaPa7BURgdZX89RDUATD\nkbAfO7QxOtGmoZLDqYGWas87MSPZnxZHpM+euk/4zs3lEfqAQGER+vDZptOzweyu\nI8bDD0H3DzOqN1kc64+ZVyGcugr9qdsjaUCUgQKBgF+t4irjNQDC44N2TwCeFGFB\nWidSmkFPemw2WXcbs36JiLaroM5MbNeU7gn317RjWEVP+9Cj5BTB/bqKPG9txN05\noOKRKjAxSKG+AXd0Q7oVLV7maObBkkLLPUjR94LJmsdb8Zpdm5YOApwusz6BYFJj\n6eVKyTCOWibpa5Pd+FN2\n-----END PRIVATE KEY-----\n",
+  "client_email": "examenarbete181204@orcandtranslate181101.iam.gserviceaccount.com",
+  "client_id": "115210183905096922953",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/examenarbete181204%40orcandtranslate181101.iam.gserviceaccount.com"
+}

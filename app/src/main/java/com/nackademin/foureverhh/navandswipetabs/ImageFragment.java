@@ -39,11 +39,13 @@ import com.google.cloud.vision.v1.Word;
 import com.google.protobuf.ByteString;
 
 
-
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 ;
 import java.util.List;
@@ -61,6 +63,7 @@ import com.google.protobuf.ByteString;
 import org.apache.commons.codec.binary.Base64;
 
 
+import javax.net.ssl.HttpsURLConnection;
 
 import static android.app.Activity.RESULT_OK;
 import static com.google.api.Page.newBuilder;
@@ -128,6 +131,29 @@ public class ImageFragment extends Fragment {
                     @Override
                     public void run()
                     {
+                        /*
+                        //Create a post request by HttpsURLConnection
+                        String url = "https//vision.googleapis.com/v1/images:annotate?" +
+                                "key=AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8";
+                        try {
+                            URL postImageUrl = new URL(url);
+                            HttpsURLConnection connection = (HttpsURLConnection)
+                                    postImageUrl.openConnection();
+                            connection.setRequestMethod("POST");
+                            connection.setDoInput(true);
+                            connection.setDoOutput(true);
+
+
+
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        */
+
+                        // Documentation tutorial
                         try {
                             //Create a vision client
                             ImageAnnotatorClient vision = ImageAnnotatorClient.create();

@@ -28,7 +28,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         try {
-            Os.setenv("GOOGLE_APPLICATION_CREDENTIALS", "app\\credential.json", true);
+            Os.setenv("GOOGLE_APPLICATION_CREDENTIALS",
+                    "/Users/foureverhh/.config/gcloud/application_default_credentials.json",
+                    true);
         } catch (ErrnoException e) {
             e.printStackTrace();
         }

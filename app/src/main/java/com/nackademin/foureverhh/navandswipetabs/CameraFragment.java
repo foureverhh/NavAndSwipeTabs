@@ -1,6 +1,7 @@
 package com.nackademin.foureverhh.navandswipetabs;
 
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -23,16 +26,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-
-import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.AccessControlException;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -45,6 +41,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class CameraFragment extends Fragment {
 
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2 ;
     private TextView textView;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private ImageView imageView;
@@ -68,9 +65,6 @@ public class CameraFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
-                Bitmap sourceBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                //String textForView = TextRecognition.textRecognize(getActivity(),sourceBitmap);
-                //textView.setText(textForView);
             }
         });
         return rootView;
@@ -82,19 +76,10 @@ public class CameraFragment extends Fragment {
         Context context = getActivity();
         if(context != null){
             if(takePictureIntent.resolveActivity(context.getPackageManager()) != null){
-                //Create the File where the photo should go
-                File photoFile = null;
-
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException e) {
-            Toast.makeText(context,"Photo File failed",Toast.LENGTH_SHORT).show();
-                }
+                File photoFile = createExternalStoragePublicPic();
                 //Continue only if the File was successfully created
                 if(photoFile != null){
-                    Uri photoUri = FileProvider.getUriForFile(getActivity(),
-                            "com.nackademin.foureverhh.navandswipetabs.fileprovider",
-                photoFile);
+                    Uri photoUri = Uri.fromFile(createExternalStoragePublicPic());
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
                     //startActivityForResult(takePictureIntent,REQUEST_TAKE_PHOTO);
                     startActivityForResult(Intent.createChooser(takePictureIntent, "Select a photo"),REQUEST_TAKE_PHOTO);
@@ -103,35 +88,24 @@ public class CameraFragment extends Fragment {
         }
     }
 
-    private File createImageFile() throws IOException{
-        //Create an image file name
-        Context context = getActivity();
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = null;
-
-        if(context != null)
-            storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                    //context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-            File image = File.createTempFile(
-                    imageFileName,
-                    ".jpg",
-                    storageDir
-            );
-        //Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        Log.e("Path is ",mCurrentPhotoPath);
-        //galleryAddImage();
-        return image;
+    private File createExternalStoragePublicPic(){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).
+                format(new Date());
+        String imageFileName = timeStamp+".jpg" ;
+        File path = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        Log.e("show public storage","path is:"+path);
+        File imageFile =  new File(path, imageFileName);
+        mCurrentPhotoPath = imageFile.getAbsolutePath();
+        return imageFile;
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){
             galleryAddImage();
-            setPic();
+            showPic();
         }
     }
 
@@ -148,34 +122,53 @@ public class CameraFragment extends Fragment {
             Log.e("Photo sent to gallery"," is not empty");
     }
 
-    private void setPic(){
-        //Get dimension Of the View
+    private void setPic() {
+        //Get the dimensions of the View
         int targetW = imageView.getWidth();
         int targetH = imageView.getHeight();
 
-        //Get dimension of the bitmap
+        //Get the dimension of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.min(photoW/targetW,photoH/targetH);
+
+        //Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+        //Decode the image file into a Bitmap sized to fill the view
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imageView.setImageBitmap(bitmap);
-        Log.e("It runs here"," in setPic");
-        String credentialsPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-        Log.e("Path is"," : "+credentialsPath);
+    }
 
-        InputStream credentialsStream = null;
-        File credentialsFile = new File("C:\\test");
-        Log.e("New path ", "is "+credentialsFile.getPath());
-        if (!credentialsFile.isFile()) {
-            Log.e("File is", "false");
-            // Path will be put in the message from the catch block below
+    private void showPic() {
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            requestPermissions( new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            //setPic();
+            Log.e("Permission","if");
+        }else {
+            setPic();
+            Log.e("Permission", "else");
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setPic();
+                Log.e("Permission","onRequestPermissionsResult");
+            }
+        }
+    }
 }
