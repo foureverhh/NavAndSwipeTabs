@@ -17,4 +17,5 @@
     <string name="test_fragment">Test Fragment</string>
     <string name="auto_fill_hints">Input a text</string>
     <string name="search_on_wikepedia">Search on WikePedia</string>
+    <string name="get_photo">get photo</string>
 </resources>

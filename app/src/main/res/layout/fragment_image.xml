@@ -14,12 +14,20 @@
         android:contentDescription="@string/photo_from_gallery"/>
     <Button
         android:layout_marginTop="5dp"
-        android:id="@+id/btn_get_text_photo_gallery"
+        android:id="@+id/btn_get_photo_gallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/get_photo_from_gallery"
         android:layout_centerInParent="true"
-        android:text="@string/get_photo_and_text"/>
+        android:text="@string/get_photo"/>
+    <Button
+        android:layout_marginTop="5dp"
+        android:id="@+id/btn_get_text_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/get_photo_from_gallery"
+        android:layout_centerInParent="true"
+        android:text="@string/get_photo"/>
     <TextView
         android:layout_marginTop="5dp"
         android:id="@+id/text_from_photo_gallery"

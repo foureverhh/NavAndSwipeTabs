@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import java.text.SimpleDateFormat;
@@ -39,7 +41,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends Fragment implements CovertImageToBase64{
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2 ;
     private TextView textView;
@@ -47,6 +49,7 @@ public class CameraFragment extends Fragment {
     private ImageView imageView;
     private Button button;
     private String mCurrentPhotoPath;
+    private String imageUrl;
 
     public CameraFragment() {
         // Required empty public constructor
@@ -72,16 +75,13 @@ public class CameraFragment extends Fragment {
 
     private void dispatchTakePictureIntent(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //Ensure that there's a camera activity to handle the intent
         Context context = getActivity();
         if(context != null){
             if(takePictureIntent.resolveActivity(context.getPackageManager()) != null){
                 File photoFile = createExternalStoragePublicPic();
-                //Continue only if the File was successfully created
                 if(photoFile != null){
                     Uri photoUri = Uri.fromFile(createExternalStoragePublicPic());
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
-                    //startActivityForResult(takePictureIntent,REQUEST_TAKE_PHOTO);
                     startActivityForResult(Intent.createChooser(takePictureIntent, "Select a photo"),REQUEST_TAKE_PHOTO);
                 }
             }
@@ -97,10 +97,18 @@ public class CameraFragment extends Fragment {
         Log.e("show public storage","path is:"+path);
         File imageFile =  new File(path, imageFileName);
         mCurrentPhotoPath = imageFile.getAbsolutePath();
+        imageUrl = convertImageToBase64();
         return imageFile;
     }
+    @Override
+    public String convertImageToBase64(){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Bitmap bitmap =  BitmapFactory.decodeFile(mCurrentPhotoPath);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,60,byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
-
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){

@@ -27,13 +27,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        try {
-            Os.setenv("GOOGLE_APPLICATION_CREDENTIALS",
-                    "/Users/foureverhh/.config/gcloud/application_default_credentials.json",
-                    true);
-        } catch (ErrnoException e) {
-            e.printStackTrace();
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);

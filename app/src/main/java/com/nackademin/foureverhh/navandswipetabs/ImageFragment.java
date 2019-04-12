@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,9 @@ import android.widget.TextView;
 
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -39,6 +43,7 @@ import com.google.cloud.vision.v1.Word;
 import com.google.protobuf.ByteString;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,9 +65,6 @@ import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.protobuf.ByteString;
 
 
-import org.apache.commons.codec.binary.Base64;
-
-
 import javax.net.ssl.HttpsURLConnection;
 
 import static android.app.Activity.RESULT_OK;
@@ -72,12 +74,20 @@ import static com.google.api.Page.newBuilder;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ImageFragment extends Fragment {
+public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRCallBack {
 
     private ImageView photoFromGallery;
     private TextView textFromPhotoGallery;
-    private Button buttonGetTextGallery;
+    private Button buttonGetPhotoGallery,buttonGetTextGallery;
     private static final int GET_PHOTO_FROM_GALLERY = 1;
+    private Bitmap bitmapGallery;
+
+
+    private String mApiKey = "792e611e6f88957";
+    private boolean isOverlayRequired = true;
+    private String mLanguage;
+    private IOCRCallBack mIOCRCallBack;
+    private String imageUrl;
 
     public ImageFragment() {
         // Required empty public constructor
@@ -91,9 +101,10 @@ public class ImageFragment extends Fragment {
         photoFromGallery = (ImageView) rootView.findViewById(R.id.get_photo_from_gallery);
         textFromPhotoGallery =(TextView) rootView.findViewById(R.id.text_from_photo_gallery);
         textFromPhotoGallery.setMovementMethod(new ScrollingMovementMethod());
-        buttonGetTextGallery =(Button) rootView.findViewById(R.id.btn_get_text_photo_gallery);
+        buttonGetPhotoGallery =(Button) rootView.findViewById(R.id.btn_get_photo_gallery);
+        buttonGetTextGallery =(Button) rootView.findViewById(R.id.btn_get_text_gallery);
 
-        buttonGetTextGallery.setOnClickListener(new View.OnClickListener() {
+        buttonGetPhotoGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent getPhotoFromGallery = new Intent();
@@ -107,7 +118,25 @@ public class ImageFragment extends Fragment {
             }
         });
 
+        startOCRTask();
         return rootView;
+    }
+
+    private void startOCRTask() {
+        imageUrl = convertImageToBase64();
+        buttonGetTextGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OCRAsyncTask ocrAsyncTask = new OCRAsyncTask(getActivity(),
+                        mApiKey,
+                        isOverlayRequired,
+                        imageUrl,
+                        mLanguage,
+                        mIOCRCallBack);
+                ocrAsyncTask.execute();
+            }
+        });
+
     }
 
     @Override
@@ -122,97 +151,14 @@ public class ImageFragment extends Fragment {
                         .getContentResolver()
                         .openInputStream(imageUri);
 
-                Bitmap originBitmap = BitmapFactory.decodeStream(inputStream);
-                Bitmap resizedBitmap = ScalePhoto.scaleDownPhoto(originBitmap
+                bitmapGallery = BitmapFactory.decodeStream(inputStream);
+                Bitmap resizedBitmap = ScalePhoto.scaleDownPhoto(bitmapGallery
                         , 500
                         , false);
                 photoFromGallery.setImageBitmap(resizedBitmap);
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        /*
-                        //Create a post request by HttpsURLConnection
-                        String url = "https//vision.googleapis.com/v1/images:annotate?" +
-                                "key=AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8";
-                        try {
-                            URL postImageUrl = new URL(url);
-                            HttpsURLConnection connection = (HttpsURLConnection)
-                                    postImageUrl.openConnection();
-                            connection.setRequestMethod("POST");
-                            connection.setDoInput(true);
-                            connection.setDoOutput(true);
 
 
 
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        */
-
-                        // Documentation tutorial
-                        try {
-                            //Create a vision client
-                            ImageAnnotatorClient vision = ImageAnnotatorClient.create();
-                            //Encode image to Base64 format
-                            byte[] imageBytes = IOUtils.toByteArray(inputStream);
-                            byte[] imageBase64 = Base64.encodeBase64(imageBytes);
-                            ByteString imgBytes = ByteString.copyFrom(imageBase64);
-                            //Create request
-                            List<AnnotateImageRequest> requests = new ArrayList<>();
-                            Image img = Image.newBuilder().setContent(imgBytes).build();
-                            Feature feat = Feature.newBuilder().
-                                    setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
-                            AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
-                                    .addFeatures(feat)
-                                    .setImage(img)
-                                    .build();
-                            requests.add(request);
-                            //parse response
-                            BatchAnnotateImagesResponse response = vision
-                                    .batchAnnotateImages(requests);
-                            List<AnnotateImageResponse> responses = response.getResponsesList();
-                            vision.close();
-
-                            String textExtracted = "";
-                            for(AnnotateImageResponse res: responses){
-                                TextAnnotation annotation = res.getFullTextAnnotation();
-                                for(Page page:annotation.getPagesList()){
-                                    String pageText = "";
-                                    for(Block block : page.getBlocksList()) {
-                                        String blockText = "";
-                                        for (Paragraph para : block.getParagraphsList()) {
-                                            String paraText = "";
-                                            for (Word word : para.getWordsList()) {
-                                                String wordText = "";
-                                                for (Symbol symbol : word.getSymbolsList()) {
-                                                    wordText = wordText + symbol.getText();
-                                                }
-                                                paraText = pageText+wordText;
-                                            }
-                                            blockText=blockText+paraText;
-                                        }
-                                        pageText=pageText+blockText;
-                                    }
-                                }
-                                textExtracted = textExtracted+annotation.getText();
-                            }
-                            final String finalTextExtracted = textExtracted;
-                            //Show result on text view
-                            textFromPhotoGallery.post(new Runnable() {
-                              @Override
-                              public void run() {
-                                  textFromPhotoGallery.setText(finalTextExtracted);
-                              }
-                          });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -221,113 +167,30 @@ public class ImageFragment extends Fragment {
             super.onActivityResult(requestCode, resultCode, data);
     }
 
-}
-/*
-    private void getText(final InputStream sourceInputStream){
-        //Initialize an instance of Vision client
-        Vision.Builder visionBuilder = new Vision.Builder(
-                new NetHttpTransport(),
-                new AndroidJsonFactory(),
-                null
-        );
 
-        visionBuilder.setVisionRequestInitializer(
-                new VisionRequestInitializer("AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8"));
-
-        final Vision vision = visionBuilder.build();
-        final String[] textInImage = {};
-        //Create new thread to handle text recognition
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                //Convert image inputStream to Base64 string
-                byte[] photoData = {};
-                try {
-                    photoData = IOUtils.toByteArray(sourceInputStream);
-                    if(photoData == null)
-                        Log.e("photoData"," is null");
-                    Image inputImage = new Image();
-                    inputImage.encodeContent(photoData);
-                    //Make a Request and get Response
-                    //byte[] inputImage = org.apache.commons.codec.binary.Base64.encodeBase64(photoData);
-                    Feature textFeature = new Feature();
-                    textFeature.setType("TEXT_DETECTION");
-
-                    AnnotateImageRequest request = new AnnotateImageRequest();
-                    request.setImage(inputImage);
-                    request.setFeatures(Arrays.asList(textFeature));
-
-                    BatchAnnotateImagesRequest batchRequest =
-                            new BatchAnnotateImagesRequest();
-                    batchRequest.setRequests(Arrays.asList(request));
-
-
-                    BatchAnnotateImagesResponse batchResponse = vision.images().annotate(batchRequest).execute();
-                    //Vision.Images.Annotate batchRequest = vision.images().annotate(batchRequest);
-                    //Use the response
-                    TextAnnotation text = batchResponse.getResponses().get(0)
-                            .getFullTextAnnotation();
-                    textFromPhotoGallery.setText(text.getText()) ;
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    @Override
+    public String convertImageToBase64() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmapGallery.compress(Bitmap.CompressFormat.JPEG,60,byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+        return android.util.Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
-*/
 
-/*
-                //Initialize an instance of Vision client
-                Vision.Builder visionBuilder = new Vision.Builder(
-                        new NetHttpTransport(),
-                        new AndroidJsonFactory(),
-                        null
-                );
-
-                visionBuilder.setVisionRequestInitializer(
-                        new VisionRequestInitializer("AIzaSyDVm55Q1b9VB5ZqG-Hfd2WlbTtUmcmkVh8"));
-
-                final Vision vision = visionBuilder.build();
-                final String[] textInImage = {};
-                //Create new thread to handle text recognition
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Convert image inputStream to Base64 string
-                        byte[] photoData = {};
-                        try {
-                            photoData = IOUtils.toByteArray(inputStream);
-                            if(photoData == null)
-                                Log.e("photoData"," is null");
-                            Image inputImage = new Image();
-                            inputImage.encodeContent(photoData);
-                            //Make a Request and get Response
-                            //byte[] inputImage = org.apache.commons.codec.binary.Base64.encodeBase64(photoData);
-                            Feature textFeature = new Feature();
-                            textFeature.setType("TEXT_DETECTION");
-
-                            AnnotateImageRequest request = new AnnotateImageRequest();
-                            request.setImage(inputImage);
-                            request.setFeatures(Arrays.asList(textFeature));
-
-                            BatchAnnotateImagesRequest batchRequest =
-                                    new BatchAnnotateImagesRequest();
-                            batchRequest.setRequests(Arrays.asList(request));
-
-
-                            BatchAnnotateImagesResponse batchResponse = vision.images().annotate(batchRequest).execute();
-                            //Vision.Images.Annotate batchRequest = vision.images().annotate(batchRequest);
-                            //Use the response
-                            TextAnnotation text = batchResponse.getResponses().get(0)
-                                    .getFullTextAnnotation();
-                            textFromPhotoGallery.setText(text.getText()) ;
-
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-               */
+    @Override
+    public void getOCRCallBackResult(String response) {
+        StringBuilder ocrResult = new StringBuilder();
+        try {
+            JSONObject object = new JSONObject(response);
+            JSONArray parsedResult = object.getJSONArray("ParsedResults");
+            for(int i=0; i< parsedResult.length();i++){
+                JSONObject subObject = parsedResult.getJSONObject(i);
+                String parsedText = subObject.getString("ParsedText");
+                ocrResult.append(parsedText);
+                ocrResult.append("\n");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        textFromPhotoGallery.setText(ocrResult.toString());
+    }
+}
