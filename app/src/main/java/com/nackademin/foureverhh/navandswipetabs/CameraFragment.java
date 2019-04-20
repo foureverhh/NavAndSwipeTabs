@@ -49,7 +49,7 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2 ;
     private TextView textView;
-    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_TAKE_PHOTO = 100;
     private ImageView imageView;
     private Button buttonTakePic,buttonGetText;
     private String mCurrentPhotoPath;
@@ -77,7 +77,7 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
 
         mApiKey = "792e611e6f88957";
         isOverlayRequired = true;
-        mLanguage = "swd";
+        mLanguage = "eng";
         mIOCRCallBack = this;
 
         buttonTakePic.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +96,7 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
         buttonGetText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                imageUrl = convertImageToBase64();
                 OCRAsyncTask ocrAsyncTask = new OCRAsyncTask(getActivity(),
                         mApiKey,
                         isOverlayRequired,
@@ -132,7 +133,7 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
         Log.e("show public storage","path is:"+path);
         File imageFile =  new File(path, imageFileName);
         mCurrentPhotoPath = imageFile.getAbsolutePath();
-        imageUrl = convertImageToBase64();
+
         return imageFile;
     }
 
