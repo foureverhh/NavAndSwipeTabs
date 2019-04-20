@@ -1,16 +1,12 @@
 package com.nackademin.foureverhh.navandswipetabs;
-
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
+
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 
@@ -22,53 +18,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.Block;
-import com.google.cloud.vision.v1.Image;
-
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
-import com.google.cloud.vision.v1.Page;
-import com.google.cloud.vision.v1.Paragraph;
-import com.google.cloud.vision.v1.Symbol;
-import com.google.cloud.vision.v1.TextAnnotation;
-import com.google.cloud.vision.v1.Word;
-import com.google.protobuf.ByteString;
-
-
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-;
-import java.util.List;
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-
-import com.google.cloud.vision.v1.EntityAnnotation;
-import com.google.cloud.vision.v1.Feature;
-import com.google.cloud.vision.v1.Feature.Type;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
-import com.google.protobuf.ByteString;
-
-
-import javax.net.ssl.HttpsURLConnection;
-
 import static android.app.Activity.RESULT_OK;
-import static com.google.api.Page.newBuilder;
+
 
 
 /**
@@ -83,8 +40,8 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
     private Bitmap bitmapGallery;
 
 
-    private String mApiKey = "792e611e6f88957";
-    private boolean isOverlayRequired = true;
+    private String mApiKey;
+    private boolean isOverlayRequired;
     private String mLanguage;
     private IOCRCallBack mIOCRCallBack;
     private String imageUrl;
@@ -103,6 +60,11 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
         textFromPhotoGallery.setMovementMethod(new ScrollingMovementMethod());
         buttonGetPhotoGallery =(Button) rootView.findViewById(R.id.btn_get_photo_gallery);
         buttonGetTextGallery =(Button) rootView.findViewById(R.id.btn_get_text_gallery);
+
+        mApiKey = "792e611e6f88957";
+        isOverlayRequired = true;
+        mLanguage = "eng";
+        mIOCRCallBack = this;
 
         buttonGetPhotoGallery.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,7 +85,7 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
     }
 
     private void startOCRTask() {
-        imageUrl = convertImageToBase64();
+
         buttonGetTextGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,9 +117,8 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
                 Bitmap resizedBitmap = ScalePhoto.scaleDownPhoto(bitmapGallery
                         , 500
                         , false);
+                imageUrl = convertImageToBase64();
                 photoFromGallery.setImageBitmap(resizedBitmap);
-
-
 
             }catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -191,6 +152,7 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.e("ocrResult",ocrResult.toString());
         textFromPhotoGallery.setText(ocrResult.toString());
     }
 }

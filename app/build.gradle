@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
     defaultConfig {
         applicationId "com.nackademin.foureverhh.navandswipetabs"
         minSdkVersion 23
@@ -9,6 +11,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        useLibrary 'org.apache.http.legacy'
     }
     buildTypes {
         release {
@@ -31,32 +35,22 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-/*
-    //Access Google Cloud Vision API by Google API Client
-    implementation 'com.google.api-client:google-api-client-android:1.22.0'
-    implementation 'com.google.apis:google-api-services-vision:v1-rev357-1.22.0'
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    //To simplify file I/O operations, implementation Apache Commons IO
-    implementation 'commons-io:commons-io:2.5'
+   // implementation 'com.google.guava:guava:27.1-jre'//){
+    //    exclude module: 'guava-gwt'
+    //}
 
-    //Invoke Android Vision API
-    //implementation 'com.google.android.gms:play-services-vision:17.0.2'
-*/
-    // Google Cloud Vision API
-    implementation 'com.google.android.gms:play-services-base:16.0.1'
+    implementation 'com.google.android.gms:play-services-base:16.1.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation 'com.google.apis:google-api-services-vision:v1-rev16-1.22.0'
+
     implementation ('com.google.api-client:google-api-client-android:1.22.0') {
         exclude module: 'httpclient'
     }
-    implementation ('com.google.http-client:google-http-client-gson:1.20.0') {
-        exclude module: 'httpclient'
-    }
+    //implementation ('com.google.http-client:google-http-client-gson:1.20.0') {
+    //   exclude module: 'httpclient'
+    //}
 
-    //implementation 'com.google.api-client:google-api-client-android:1.22.0'
-    //implementation 'com.google.apis:google-api-services-vision:v1-rev357-1.22.0'
-    implementation 'com.google.cloud:google-cloud-vision:1.53.0'
-    //implementation 'com.google.cloud:google-cloud-storage:1.53.0'
-    //To simplify file I/O operations, implementation Apache Commons IO
+
+    //implementation 'com.google.cloud:google-cloud-vision:1.53.0'
+
     implementation 'commons-io:commons-io:2.5'
 }

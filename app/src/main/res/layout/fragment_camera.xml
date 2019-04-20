@@ -16,10 +16,18 @@
             android:contentDescription="@string/photo_position"/>
         <Button
             android:layout_marginTop="5dp"
-            android:id="@+id/btn_text_from_camera"
+            android:id="@+id/btn_take_pic_from_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/camera_image"
+            android:layout_centerInParent="true"
+            android:text="@string/take_photo"/>
+        <Button
+            android:layout_marginTop="5dp"
+            android:id="@+id/btn_text_from_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_take_pic_from_camera"
             android:layout_centerInParent="true"
             android:text="@string/get_text_from_photo"/>
         <TextView

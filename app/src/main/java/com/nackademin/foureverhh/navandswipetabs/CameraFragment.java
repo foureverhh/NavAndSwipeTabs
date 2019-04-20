@@ -28,6 +28,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
@@ -41,14 +45,19 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CameraFragment extends Fragment implements CovertImageToBase64{
+public class CameraFragment extends Fragment implements CovertImageToBase64,IOCRCallBack{
 
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2 ;
     private TextView textView;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private ImageView imageView;
-    private Button button;
+    private Button buttonTakePic,buttonGetText;
     private String mCurrentPhotoPath;
+
+    private String mApiKey;
+    private boolean isOverlayRequired;
+    private String mLanguage;
+    private IOCRCallBack mIOCRCallBack;
     private String imageUrl;
 
     public CameraFragment() {
@@ -63,14 +72,40 @@ public class CameraFragment extends Fragment implements CovertImageToBase64{
         textView = rootView.findViewById(R.id.camera_fragment_text);
         textView.setMovementMethod(new ScrollingMovementMethod());
         imageView = rootView.findViewById(R.id.camera_image);
-        button = rootView.findViewById(R.id.btn_text_from_camera);
-        button.setOnClickListener(new View.OnClickListener() {
+        buttonTakePic = rootView.findViewById(R.id.btn_take_pic_from_camera);
+        buttonGetText = rootView.findViewById(R.id.btn_text_from_camera);
+
+        mApiKey = "792e611e6f88957";
+        isOverlayRequired = true;
+        mLanguage = "swd";
+        mIOCRCallBack = this;
+
+        buttonTakePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
             }
         });
+
+        startOCRTask();
         return rootView;
+    }
+
+    private void startOCRTask() {
+
+        buttonGetText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OCRAsyncTask ocrAsyncTask = new OCRAsyncTask(getActivity(),
+                        mApiKey,
+                        isOverlayRequired,
+                        imageUrl,
+                        mLanguage,
+                        mIOCRCallBack);
+                ocrAsyncTask.execute();
+            }
+        });
+
     }
 
     private void dispatchTakePictureIntent(){
@@ -81,8 +116,8 @@ public class CameraFragment extends Fragment implements CovertImageToBase64{
                 File photoFile = createExternalStoragePublicPic();
                 if(photoFile != null){
                     Uri photoUri = Uri.fromFile(createExternalStoragePublicPic());
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri);
-                    startActivityForResult(Intent.createChooser(takePictureIntent, "Select a photo"),REQUEST_TAKE_PHOTO);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO );
                 }
             }
         }
@@ -100,15 +135,16 @@ public class CameraFragment extends Fragment implements CovertImageToBase64{
         imageUrl = convertImageToBase64();
         return imageFile;
     }
+
     @Override
     public String convertImageToBase64(){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Bitmap bitmap =  BitmapFactory.decodeFile(mCurrentPhotoPath);
         bitmap.compress(Bitmap.CompressFormat.JPEG,60,byteArrayOutputStream);
         byte[] imageBytes = byteArrayOutputStream.toByteArray();
-
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK){
@@ -125,7 +161,6 @@ public class CameraFragment extends Fragment implements CovertImageToBase64{
         mediaScanIntent.setData(contentUri);
         if(getActivity() != null)
             getActivity().sendBroadcast(mediaScanIntent);
-        Log.e("It runs here"," in gallery add");
         if(contentUri != null)
             Log.e("Photo sent to gallery"," is not empty");
     }
@@ -178,5 +213,23 @@ public class CameraFragment extends Fragment implements CovertImageToBase64{
                 Log.e("Permission","onRequestPermissionsResult");
             }
         }
+    }
+
+    @Override
+    public void getOCRCallBackResult(String response) {
+        StringBuilder ocrResult = new StringBuilder();
+        try {
+            JSONObject object = new JSONObject(response);
+            JSONArray parsedResult = object.getJSONArray("ParsedResults");
+            for(int i=0; i< parsedResult.length();i++){
+                JSONObject subObject = parsedResult.getJSONObject(i);
+                String parsedText = subObject.getString("ParsedText");
+                ocrResult.append(parsedText);
+                ocrResult.append("\n");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        textView.setText(ocrResult.toString());
     }
 }
