@@ -19,4 +19,6 @@
     <string name="search_on_wikepedia">Search on WikePedia</string>
     <string name="get_photo">get photo</string>
     <string name="take_photo">take photo</string>
+
+    <string name="no_result_wikepedia">No Result on Wikipedia</string>
 </resources>

@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.api.client.json.JsonString;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -51,21 +54,28 @@ public class TextFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchResultFromWiki();
+                final String text = editText.getText().toString();
+                searchResultFromWiki("en",text);
             }
         });
         return rootView;
     }
 
 
-    private void searchResultFromWiki() {
+    private void searchResultFromWiki(final String language,final String text) {
+
+
 
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                String text = editText.getText().toString();
-                String url = "https://zh.wikipedia.org/w/api.php?action=parse&page="+
-                        text+"&prop=wikitext&utf8&&format=json";
+
+                String url ="https://"+language+".wikipedia.org/w/api.php" +
+                        "?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1" +
+                        "&titles="+text;
+                //"https://en.wikipedia.org/w/api.php?action=parse&page="+text+"&prop=wikitext&utf8&&format=json";
+                // String url = "https://en.wikipedia.org/w/api.php?action=parse&page="+
+                //                        text+"&prop=wikitext&utf8&&format=json";
                 //String url = "https://zh.wikipedia.org/w/api.php?action=opensearch&search="+
                 //        text+"&utf8&format=json";
 
@@ -75,7 +85,7 @@ public class TextFragment extends Fragment {
                     HttpsURLConnection connection = (HttpsURLConnection)endPoint.openConnection();
                     connection.setRequestMethod("GET");
                     //Parse response from connection
-                    int responseCode = connection.getResponseCode();
+                    //int responseCode = connection.getResponseCode();
                     BufferedReader in = new BufferedReader
                             (new InputStreamReader(connection.getInputStream()));
                     String inputLine;
@@ -85,15 +95,31 @@ public class TextFragment extends Fragment {
                     in.close();
 
                     JSONObject myResponse = new JSONObject(response.toString());
-                    JSONObject parseObject = myResponse.getJSONObject("parse");
-                    JSONObject wikiTextObject = parseObject.getJSONObject("wikitext");
-                    final String textToShow = wikiTextObject.getString("*");
-                    textView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(textToShow);
+                    JSONObject queryObject = myResponse.getJSONObject("query");
+                    JSONObject pagesObject = queryObject.getJSONObject("pages");
+                    //JSONObject contentObject = pagesObject.getJSONObject("19714");
+                    //get dynamic keys from pages object
+                    Iterator<?> keys = pagesObject.keys();
+
+                    while (keys.hasNext()){
+                        String key = (String) keys.next();
+                        if(key.equals("-1"))
+                            searchResultFromWiki("sv",text);
+                        else if(pagesObject.get(key) instanceof JSONObject){
+                            final String textToShow = pagesObject.getJSONObject(key)
+                                        .optString("extract");
+                            textView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (textToShow != null)
+                                        textView.setText(textToShow);
+                                    else
+                                        textView.setText(getString(R.string.no_result_wikepedia));
+                                }
+                            });
                         }
-                    });
+                    }
+
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
 
@@ -101,12 +127,6 @@ public class TextFragment extends Fragment {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    textView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText("查无结果！");
-                        }
-                    });
                 }
 
 

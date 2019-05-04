@@ -89,12 +89,14 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
         buttonGetTextGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 OCRAsyncTask ocrAsyncTask = new OCRAsyncTask(getActivity(),
                         mApiKey,
                         isOverlayRequired,
                         imageUrl,
                         mLanguage,
                         mIOCRCallBack);
+
                 ocrAsyncTask.execute();
             }
         });
