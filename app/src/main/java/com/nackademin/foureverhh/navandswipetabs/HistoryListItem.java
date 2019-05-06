@@ -6,9 +6,6 @@ public class HistoryListItem {
     private String date;
     private String result;
 
-    public HistoryListItem() {
-    }
-
     public HistoryListItem(String keyword, String date, String result) {
         this.keyword = keyword;
         this.date = date;

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -18,7 +19,15 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
     private Context mContext;
     private List<HistoryListItem> historyListItemList;
     private Dialog itemDetailDialog;
+    private OnItemClickListener itemClickListener;
 
+    public interface OnItemClickListener {
+        void onRemoveClick(int position);
+    }
+
+    public void setItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
 
     public HistoryListViewAdapter(Context mContext, List<HistoryListItem> historyListItemList) {
         this.mContext = mContext;
@@ -34,27 +43,23 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
         itemDetailDialog = new Dialog(mContext);
         itemDetailDialog.setContentView(R.layout.item_history_detail);
 
-        final HistoryListViewHolder myHistoryListViewHolder = new HistoryListViewHolder(view);
+        final HistoryListViewHolder myHistoryListViewHolder = new HistoryListViewHolder(view,
+                itemClickListener);
 
         myHistoryListViewHolder.historyItemCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int position = myHistoryListViewHolder.getAdapterPosition();
                 TextView title_history_dialog = itemDetailDialog.findViewById(R.id.dialog_title);
                 TextView result_history_dialog = itemDetailDialog.findViewById(R.id.dialog_result);
-
-                title_history_dialog.setText(historyListItemList
-                        .get(myHistoryListViewHolder.getAdapterPosition())
-                        .getKeyword());
-
-                result_history_dialog.setText(historyListItemList
-                        .get(myHistoryListViewHolder.getAdapterPosition())
-                        .getResult());
-
+                title_history_dialog.setText(historyListItemList.get(position).getKeyword());
+                result_history_dialog.setText(historyListItemList.get(position).getResult());
                 itemDetailDialog.show();
             }
         });
 
-        return myHistoryListViewHolder ;
+
+        return  myHistoryListViewHolder;
     }
 
     @Override
@@ -67,7 +72,7 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
 
     @Override
     public int getItemCount() {
-        return historyListItemList.size();
+        return historyListItemList != null ? historyListItemList.size() :0 ;
     }
 
     public static class HistoryListViewHolder extends RecyclerView.ViewHolder{
@@ -77,12 +82,26 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
         public ImageView remove_item;
         public CardView historyItemCard;
 
-        public HistoryListViewHolder(View itemView) {
+        public HistoryListViewHolder(View itemView, final OnItemClickListener listener) {
             super(itemView);
             keyword_tv = itemView.findViewById(R.id.keyword_textView);
             date_tv = itemView.findViewById(R.id.date_textView);
             remove_item = itemView.findViewById(R.id.image_delete);
             historyItemCard = itemView.findViewById(R.id.item_history_list_cardView);
+
+            remove_item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onRemoveClick(position);
+                        }
+
+                    }
+                }
+            });
+
 
         }
     }
