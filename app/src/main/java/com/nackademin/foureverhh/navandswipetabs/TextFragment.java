@@ -54,7 +54,7 @@ public class TextFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String text = editText.getText().toString();
+                final String text = editText.getText().toString().trim();
                 searchResultFromWiki("en",text);
             }
         });
@@ -73,11 +73,6 @@ public class TextFragment extends Fragment {
                 String url ="https://"+language+".wikipedia.org/w/api.php" +
                         "?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1" +
                         "&titles="+text;
-                //"https://en.wikipedia.org/w/api.php?action=parse&page="+text+"&prop=wikitext&utf8&&format=json";
-                // String url = "https://en.wikipedia.org/w/api.php?action=parse&page="+
-                //                        text+"&prop=wikitext&utf8&&format=json";
-                //String url = "https://zh.wikipedia.org/w/api.php?action=opensearch&search="+
-                //        text+"&utf8&format=json";
 
                 URL endPoint = null;
                 try {
@@ -97,10 +92,7 @@ public class TextFragment extends Fragment {
                     JSONObject myResponse = new JSONObject(response.toString());
                     JSONObject queryObject = myResponse.getJSONObject("query");
                     JSONObject pagesObject = queryObject.getJSONObject("pages");
-                    //JSONObject contentObject = pagesObject.getJSONObject("19714");
-                    //get dynamic keys from pages object
                     Iterator<?> keys = pagesObject.keys();
-
                     while (keys.hasNext()){
                         String key = (String) keys.next();
                         if(key.equals("-1"))
@@ -128,10 +120,7 @@ public class TextFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
         });
     }
 }
-//class ParseWikiTask extends AsyncTask< >{ }

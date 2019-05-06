@@ -1,4 +1,5 @@
 package com.nackademin.foureverhh.navandswipetabs;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.text.method.ScrollingMovementMethod;
 
 import android.util.Base64;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import static android.app.Activity.RESULT_OK;
-
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 
 /**
@@ -55,11 +57,14 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_image, container, false);
-        photoFromGallery = (ImageView) rootView.findViewById(R.id.get_photo_from_gallery);
-        textFromPhotoGallery =(TextView) rootView.findViewById(R.id.text_from_photo_gallery);
+        photoFromGallery = rootView.findViewById(R.id.get_photo_from_gallery);
+        textFromPhotoGallery = rootView.findViewById(R.id.text_from_photo_gallery);
         textFromPhotoGallery.setMovementMethod(new ScrollingMovementMethod());
-        buttonGetPhotoGallery =(Button) rootView.findViewById(R.id.btn_get_photo_gallery);
-        buttonGetTextGallery =(Button) rootView.findViewById(R.id.btn_get_text_gallery);
+        registerForContextMenu(textFromPhotoGallery);
+        buttonGetPhotoGallery = rootView.findViewById(R.id.btn_get_photo_gallery);
+        buttonGetTextGallery = rootView.findViewById(R.id.btn_get_text_gallery);
+
+
 
         mApiKey = "792e611e6f88957";
         isOverlayRequired = true;
@@ -127,7 +132,7 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
             }
 
         }
-            super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -156,5 +161,17 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
         }
         Log.e("ocrResult",ocrResult.toString());
         textFromPhotoGallery.setText(ocrResult.toString());
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0,v.getId(),0,"Copy");
+        TextView myTextView = (TextView) v;
+
+        ClipboardManager clipboardManager = (ClipboardManager) getContext()
+                                                .getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.setText(myTextView.getText());
     }
 }

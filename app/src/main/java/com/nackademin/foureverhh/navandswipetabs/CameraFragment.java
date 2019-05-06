@@ -2,6 +2,7 @@ package com.nackademin.foureverhh.navandswipetabs;
 
 
 import android.Manifest;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.support.v4.content.FileProvider;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Base64;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 
 /**
@@ -71,6 +74,7 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
         // Inflate the layout for this fragment
         textView = rootView.findViewById(R.id.camera_fragment_text);
         textView.setMovementMethod(new ScrollingMovementMethod());
+        registerForContextMenu(textView);
         imageView = rootView.findViewById(R.id.camera_image);
         buttonTakePic = rootView.findViewById(R.id.btn_take_pic_from_camera);
         buttonGetText = rootView.findViewById(R.id.btn_text_from_camera);
@@ -232,5 +236,17 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
             e.printStackTrace();
         }
         textView.setText(ocrResult.toString());
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        menu.add(0,v.getId(),0,"Copy");
+        TextView myTextView = (TextView) v;
+
+        ClipboardManager clipboardManager = (ClipboardManager) getContext()
+                .getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.setText(myTextView.getText());
     }
 }
