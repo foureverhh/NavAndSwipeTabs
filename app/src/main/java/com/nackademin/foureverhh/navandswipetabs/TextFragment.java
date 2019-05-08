@@ -1,8 +1,11 @@
 package com.nackademin.foureverhh.navandswipetabs;
 
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -11,8 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.google.api.client.json.JsonString;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +27,7 @@ import java.net.URL;
 import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
+import com.nackademin.foureverhh.navandswipetabs.HistoryContract.*;
 
 
 /**
@@ -35,11 +38,19 @@ public class TextFragment extends Fragment {
     private EditText editText;
     private TextView textView;
     private Button button;
+    private SQLiteDatabase historyDatabase;
 
     public TextFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //Create database
+        HistoryDBHelper historyDBHelper = new HistoryDBHelper(getActivity());
+        historyDatabase = historyDBHelper.getWritableDatabase();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,17 +66,17 @@ public class TextFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final String text = editText.getText().toString().trim();
+                if(text.isEmpty())
+                    return;
                 searchResultFromWiki("en",text);
             }
         });
+
         return rootView;
     }
 
 
     private void searchResultFromWiki(final String language,final String text) {
-
-
-
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -103,10 +114,16 @@ public class TextFragment extends Fragment {
                             textView.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (textToShow != null)
+                                    if (textToShow != null) {
                                         textView.setText(textToShow);
-                                    else
+                                        addItemToDataBase(text,textToShow);
+                                    }
+                                    else {
+
                                         textView.setText(getString(R.string.no_result_wikepedia));
+                                        addItemToDataBase(text,
+                                                getString(R.string.no_result_wikepedia));
+                                    }
                                 }
                             });
                         }
@@ -122,5 +139,13 @@ public class TextFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void addItemToDataBase(String keyword, String result) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(HistoryEntry.COLUMN_NAME_KEYWORD,keyword);
+        contentValues.put(HistoryEntry.COLUMN_NAME_RESULT,result);
+        long rowId = historyDatabase.insert(HistoryEntry.TABLE_NAME,null,contentValues);
+        Toast.makeText(getContext(),"data save to database"+rowId,Toast.LENGTH_SHORT).show();
     }
 }

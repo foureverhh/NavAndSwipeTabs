@@ -2,6 +2,7 @@ package com.nackademin.foureverhh.navandswipetabs;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,16 +11,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import java.util.List;
 
-public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListViewAdapter.HistoryListViewHolder>  {
+public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListViewAdapter
+        .HistoryListViewHolder>  {
 
     private Context mContext;
     private List<HistoryListItem> historyListItemList;
     private Dialog itemDetailDialog;
     private OnItemClickListener itemClickListener;
+    private Cursor mCursor;
 
     public interface OnItemClickListener {
         void onRemoveClick(int position);
@@ -29,6 +32,7 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
         this.itemClickListener = itemClickListener;
     }
 
+    //!!!!!!!!!!!!Going to add mCursor here!!!!!!!!!!
     public HistoryListViewAdapter(Context mContext, List<HistoryListItem> historyListItemList) {
         this.mContext = mContext;
         this.historyListItemList = historyListItemList;
@@ -101,8 +105,6 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
                     }
                 }
             });
-
-
         }
     }
 }

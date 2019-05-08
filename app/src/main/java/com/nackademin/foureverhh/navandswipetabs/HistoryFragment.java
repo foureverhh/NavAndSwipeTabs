@@ -1,7 +1,7 @@
 package com.nackademin.foureverhh.navandswipetabs;
 
 
-import android.app.Dialog;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,6 +28,8 @@ public class HistoryFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private HistoryListViewAdapter historyListViewAdapter;
 
+
+
     public HistoryFragment() {
         // Required empty public constructor
     }
@@ -50,6 +52,7 @@ public class HistoryFragment extends Fragment {
         recyclerView.setAdapter(historyListViewAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
+
         historyListViewAdapter.setItemClickListener(new HistoryListViewAdapter.OnItemClickListener() {
             @Override
             public void onRemoveClick(int position) {
@@ -61,12 +64,14 @@ public class HistoryFragment extends Fragment {
     }
 
     public void removeItem(int position){
+        //To delete item from myDataBase
         historyListItemList.remove(position);
         historyListViewAdapter.notifyItemRemoved(position);
     }
 
 
     public void createData(){
+        //To read data from myDataBase
         historyListItemList = new ArrayList<>();
         historyListItemList.add(new HistoryListItem("keyword1","date1","Result1"));
         historyListItemList.add(new HistoryListItem("keyword2","date2","Result2"));
