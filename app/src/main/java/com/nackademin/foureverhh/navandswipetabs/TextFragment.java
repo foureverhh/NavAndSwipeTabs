@@ -111,21 +111,25 @@ public class TextFragment extends Fragment {
                         else if(pagesObject.get(key) instanceof JSONObject){
                             final String textToShow = pagesObject.getJSONObject(key)
                                         .optString("extract");
-                            textView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (textToShow != null) {
+                            if(textToShow.length() != 0) {
+                                textView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
                                         textView.setText(textToShow);
-                                        addItemToDataBase(text,textToShow);
+                                        addItemToDataBase(text, textToShow);
                                     }
-                                    else {
-
+                                });
+                            }
+                            else {
+                                textView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
                                         textView.setText(getString(R.string.no_result_wikepedia));
                                         addItemToDataBase(text,
                                                 getString(R.string.no_result_wikepedia));
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
 
@@ -147,5 +151,6 @@ public class TextFragment extends Fragment {
         contentValues.put(HistoryEntry.COLUMN_NAME_RESULT,result);
         long rowId = historyDatabase.insert(HistoryEntry.TABLE_NAME,null,contentValues);
         Toast.makeText(getContext(),"data save to database"+rowId,Toast.LENGTH_SHORT).show();
+        editText.getText().clear();
     }
 }

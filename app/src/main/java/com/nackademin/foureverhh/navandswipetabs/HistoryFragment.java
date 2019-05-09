@@ -1,7 +1,9 @@
 package com.nackademin.foureverhh.navandswipetabs;
 
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.nackademin.foureverhh.navandswipetabs.HistoryContract.*;
 
 
 /**
@@ -24,11 +27,10 @@ public class HistoryFragment extends Fragment {
     View rootView;
     private TextView titleText;
     private RecyclerView recyclerView;
-    private List<HistoryListItem> historyListItemList;
     private RecyclerView.LayoutManager layoutManager;
     private HistoryListViewAdapter historyListViewAdapter;
 
-
+    private SQLiteDatabase myHistoryDatabase;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -45,7 +47,7 @@ public class HistoryFragment extends Fragment {
         titleText = rootView.findViewById(R.id.history_textView_id);
         recyclerView = rootView.findViewById(R.id.recyclerView_history_id);
         titleText.setText(getString(R.string.history_title));
-        historyListViewAdapter = new HistoryListViewAdapter(getContext() ,historyListItemList);
+        historyListViewAdapter = new HistoryListViewAdapter(getContext() ,getAllItems());
 
         layoutManager = new LinearLayoutManager(getActivity());
 
@@ -65,24 +67,34 @@ public class HistoryFragment extends Fragment {
 
     public void removeItem(int position){
         //To delete item from myDataBase
-        historyListItemList.remove(position);
+        //historyListItemList.remove(position);
+        //historyListViewAdapter.notifyItemRemoved(position);
+        //String selection = HistoryEntry.COLUMN_NAME_KEYWORD + " = ?";
+        //String[] selectionArgs = { current_keyword };
+        HistoryDBHelper historyDBHelper = new HistoryDBHelper(getActivity());
+        myHistoryDatabase = historyDBHelper.getWritableDatabase();
+        myHistoryDatabase.delete(HistoryEntry.TABLE_NAME,HistoryEntry._ID +"="+position,null);
+        historyListViewAdapter.swapCursor(getAllItems());
         historyListViewAdapter.notifyItemRemoved(position);
-    }
 
 
-    public void createData(){
-        //To read data from myDataBase
-        historyListItemList = new ArrayList<>();
-        historyListItemList.add(new HistoryListItem("keyword1","date1","Result1"));
-        historyListItemList.add(new HistoryListItem("keyword2","date2","Result2"));
-        historyListItemList.add(new HistoryListItem("keyword3","date3","Result3"));
-        historyListItemList.add(new HistoryListItem("keyword4","date4","Result4"));
-        historyListItemList.add(new HistoryListItem("keyword5","date5","Result5"));
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        createData();
+
+    }
+
+    private Cursor getAllItems(){
+        HistoryDBHelper historyDBHelper = new HistoryDBHelper(getActivity());
+        myHistoryDatabase = historyDBHelper.getReadableDatabase();
+        return myHistoryDatabase.query(HistoryEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                HistoryEntry.COLUMN_TIMESTAMP + " DESC");
     }
 }
