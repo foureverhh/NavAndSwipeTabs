@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 import com.nackademin.foureverhh.navandswipetabs.HistoryContract.*;
@@ -65,7 +67,7 @@ public class TextFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String text = editText.getText().toString().trim();
+                final String text = handleRawText(editText.getText().toString().trim());
                 if(text.isEmpty())
                     return;
                 searchResultFromWiki("en",text);
@@ -116,7 +118,8 @@ public class TextFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         textView.setText(textToShow);
-                                        addItemToDataBase(text, textToShow);
+                                        addItemToDataBase(text.replace("%20"," "),
+                                                textToShow);
                                     }
                                 });
                             }
@@ -125,14 +128,13 @@ public class TextFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         textView.setText(getString(R.string.no_result_wikepedia));
-                                        addItemToDataBase(text,
+                                        addItemToDataBase(text.replace("%20"," "),
                                                 getString(R.string.no_result_wikepedia));
                                     }
                                 });
                             }
                         }
                     }
-
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
 
@@ -152,5 +154,9 @@ public class TextFragment extends Fragment {
         long rowId = historyDatabase.insert(HistoryEntry.TABLE_NAME,null,contentValues);
         Toast.makeText(getContext(),"data save to database"+rowId,Toast.LENGTH_SHORT).show();
         editText.getText().clear();
+    }
+
+    private String handleRawText(String rawText){
+       return rawText.replace(" ","%20");
     }
 }

@@ -26,7 +26,7 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
     private Cursor mCursor;
 
     public interface OnItemClickListener {
-        void onRemoveClick(int position);
+        void onRemoveClick(int position, long databaseId);
     }
 
     public void setItemClickListener(OnItemClickListener itemClickListener) {
@@ -97,12 +97,13 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
         public ImageView remove_item;
         public CardView historyItemCard;
 
-        public HistoryListViewHolder(View itemView, final OnItemClickListener listener) {
+        public HistoryListViewHolder(final View itemView, final OnItemClickListener listener) {
             super(itemView);
             keyword_tv = itemView.findViewById(R.id.keyword_textView);
             date_tv = itemView.findViewById(R.id.date_textView);
             remove_item = itemView.findViewById(R.id.image_delete);
             historyItemCard = itemView.findViewById(R.id.item_history_list_cardView);
+
 
             remove_item.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,7 +111,8 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
                     if(listener != null){
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
-                            listener.onRemoveClick(position);
+                            long databaseId = (long)itemView.getTag();
+                            listener.onRemoveClick(position,databaseId);
                         }
                     }
                 }
@@ -124,9 +126,10 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
         }
 
         mCursor = newCursor;
-
-        if(newCursor != null){
+/*
+        if(mCursor != null){
             notifyDataSetChanged();
         }
+*/
     }
 }
