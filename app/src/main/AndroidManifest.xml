@@ -12,7 +12,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/wikipedia_icon"
         android:hardwareAccelerated="false"
         android:largeHeap="true"
         android:label="@string/app_name"

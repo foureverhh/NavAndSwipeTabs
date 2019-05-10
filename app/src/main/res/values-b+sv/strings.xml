@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Kolla på wiki</string>
+    <string name="nav_photo">Bild</string>
+    <string name="nav_text">Text</string>
+    <string name="nav_history">Historia</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="camera_input">Kamera</string>
+    <string name="photo_library_input">Foto Bibliotek</string>
+    <string name="get_text_from_photo">Extrahera texter</string>
+    <string name="photo_position">Foto position</string>
+    <string name="camera_fragment_text">Kamera Fragment</string>
+    <string name="photo_from_gallery">Foto från gallery</string>
+    <string name="text_wanted">Ange eller klistra in att söka</string>
+    <string name="test_fragment">Resultat visas här</string>
+    <string name="search_on_wikipedia">Letar efter på Wikipedia</string>
+    <string name="get_photo">hämta foto</string>
+    <string name="take_photo">Ta foto</string>
+
+    <string name="no_result_wikipedia">Inget resultat på Wikipedia</string>
+    <string name="no_result_ocr">Ingen text extraherats på bilden, ta ett annant foto.</string>
+    <string name="history_title">Din sökningar:</string>
+</resources>

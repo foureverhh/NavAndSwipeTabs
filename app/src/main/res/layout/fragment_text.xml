@@ -16,7 +16,7 @@
         android:id="@+id/btn_textFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/search_on_wikepedia"
+        android:text="@string/search_on_wikipedia"
         android:layout_below="@id/edit_query_textPage"
         android:layout_centerHorizontal="true"/>
 

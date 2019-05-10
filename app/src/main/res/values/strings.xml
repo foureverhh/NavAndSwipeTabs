@@ -1,26 +1,23 @@
 <resources>
-    <string name="app_name">NavAndSwipeTabs</string>
+    <string name="app_name">Check on wiki</string>
     <string name="nav_photo">Photo</string>
     <string name="nav_text">Text</string>
     <string name="nav_history">History</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="camera_input">Camera</string>
     <string name="photo_library_input">Photo Library</string>
     <string name="get_text_from_photo">GET TEXT FROM PHOTO</string>
     <string name="photo_position">Photo position</string>
     <string name="camera_fragment_text">Camera Fragment</string>
     <string name="photo_from_gallery">Photo from gallery</string>
-    <string name="get_photo_and_text">Get photo and text</string>
-    <string name="text_wanted">Paste what you want to find</string>
-    <string name="test_fragment">Test Fragment</string>
-    <string name="auto_fill_hints">Input a text</string>
-    <string name="search_on_wikepedia">Search on WikePedia</string>
+    <string name="text_wanted">Input or paste what you want to find</string>
+    <string name="test_fragment">Result shows here</string>
+    <string name="search_on_wikipedia">Search on Wikipedia</string>
     <string name="get_photo">get photo</string>
     <string name="take_photo">take photo</string>
 
-    <string name="no_result_wikepedia">No Result on Wikipedia</string>
+    <string name="no_result_wikipedia">No Result on Wikipedia</string>
     <string name="no_result_ocr">No texts found in the picture, try another picture.</string>
     <string name="history_title">Your search history:</string>
 </resources>

@@ -117,9 +117,9 @@ public class TextFragment extends Fragment {
                                 textView.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        textView.setText(getString(R.string.no_result_wikepedia));
+                                        textView.setText(getString(R.string.no_result_wikipedia));
                                         addItemToDataBase(text.replace("%20"," "),
-                                                getString(R.string.no_result_wikepedia));
+                                                getString(R.string.no_result_wikipedia));
                                     }
                                 });
                             } else {
