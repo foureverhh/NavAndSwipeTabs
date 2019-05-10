@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+
 import java.util.Iterator;
-import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 import com.nackademin.foureverhh.navandswipetabs.HistoryContract.*;
@@ -108,28 +108,28 @@ public class TextFragment extends Fragment {
                     Iterator<?> keys = pagesObject.keys();
                     while (keys.hasNext()){
                         String key = (String) keys.next();
-                        if(key.equals("-1"))
+                        if(language.equals("en") && key.equals("-1"))
                             searchResultFromWiki("sv",text);
                         else if(pagesObject.get(key) instanceof JSONObject){
                             final String textToShow = pagesObject.getJSONObject(key)
                                         .optString("extract");
-                            if(textToShow.length() != 0) {
-                                textView.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        textView.setText(textToShow);
-                                        addItemToDataBase(text.replace("%20"," "),
-                                                textToShow);
-                                    }
-                                });
-                            }
-                            else {
+                            if(textToShow.isEmpty()) {
                                 textView.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         textView.setText(getString(R.string.no_result_wikepedia));
                                         addItemToDataBase(text.replace("%20"," "),
                                                 getString(R.string.no_result_wikepedia));
+                                    }
+                                });
+                            } else {
+
+                                textView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        textView.setText(textToShow);
+                                        addItemToDataBase(text.replace("%20"," "),
+                                                textToShow);
                                     }
                                 });
                             }
@@ -152,7 +152,7 @@ public class TextFragment extends Fragment {
         contentValues.put(HistoryEntry.COLUMN_NAME_KEYWORD,keyword);
         contentValues.put(HistoryEntry.COLUMN_NAME_RESULT,result);
         long rowId = historyDatabase.insert(HistoryEntry.TABLE_NAME,null,contentValues);
-        Toast.makeText(getContext(),"data save to database"+rowId,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(),"data save to database"+rowId,Toast.LENGTH_SHORT).show();
         editText.getText().clear();
     }
 
