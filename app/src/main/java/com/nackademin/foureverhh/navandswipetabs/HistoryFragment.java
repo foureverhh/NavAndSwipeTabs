@@ -29,7 +29,7 @@ public class HistoryFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
     private HistoryListViewAdapter historyListViewAdapter;
 
-    private SQLiteDatabase myHistoryDatabase;
+    private SQLiteDatabase historyDatabase;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -46,7 +46,7 @@ public class HistoryFragment extends Fragment {
         titleText = rootView.findViewById(R.id.history_textView_id);
         recyclerView = rootView.findViewById(R.id.recyclerView_history_id);
         titleText.setText(getString(R.string.history_title));
-        historyListViewAdapter = new HistoryListViewAdapter(getContext(), getAllItems());
+
 
         layoutManager = new LinearLayoutManager(getActivity());
 
@@ -67,29 +67,28 @@ public class HistoryFragment extends Fragment {
         return rootView;
     }
 
-    public void removeItem(int position,long databaseId){
-
-        Log.d("Position is", "removeItem: "+position);
-        HistoryDBHelper historyDBHelper = new HistoryDBHelper(getActivity());
-        myHistoryDatabase = historyDBHelper.getWritableDatabase();
-        int deleteResult = myHistoryDatabase.delete(HistoryEntry.TABLE_NAME,HistoryEntry._ID +"="+databaseId,null);
-        Toast.makeText(getContext(),"Result "+deleteResult,Toast.LENGTH_SHORT).show();
-        historyListViewAdapter.swapCursor(getAllItems());
-        historyListViewAdapter.notifyItemRemoved(position);
-        recyclerView.setAdapter(historyListViewAdapter);
-        recyclerView.setLayoutManager(layoutManager);
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        HistoryDBHelper historyDBHelper = new HistoryDBHelper(getActivity());
+        historyDatabase = historyDBHelper.getWritableDatabase();
+        historyListViewAdapter = new HistoryListViewAdapter(getContext(), getAllItems());
     }
 
+    public void removeItem(int position,long databaseId){
+
+        Log.d("Position is", "removeItem: "+position);
+
+
+        int deleteResult = historyDatabase.delete(HistoryEntry.TABLE_NAME,HistoryEntry._ID +"="+databaseId,null);
+        Toast.makeText(getContext(),"Result "+deleteResult,Toast.LENGTH_SHORT).show();
+        historyListViewAdapter.swapCursor(getAllItems());
+        historyListViewAdapter.notifyItemRemoved(position);
+
+    }
     private Cursor getAllItems(){
-        HistoryDBHelper historyDBHelper = new HistoryDBHelper(getActivity());
-        myHistoryDatabase = historyDBHelper.getReadableDatabase();
-        return myHistoryDatabase.query(HistoryEntry.TABLE_NAME,
+        return historyDatabase.query(HistoryEntry.TABLE_NAME,
                 null,
                 null,
                 null,

@@ -2,6 +2,7 @@ package com.nackademin.foureverhh.navandswipetabs;
 
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -151,12 +152,12 @@ public class TextFragment extends Fragment {
         ContentValues contentValues = new ContentValues();
         contentValues.put(HistoryEntry.COLUMN_NAME_KEYWORD,keyword);
         contentValues.put(HistoryEntry.COLUMN_NAME_RESULT,result);
-        long rowId = historyDatabase.insert(HistoryEntry.TABLE_NAME,null,contentValues);
-        //Toast.makeText(getContext(),"data save to database"+rowId,Toast.LENGTH_SHORT).show();
+        historyDatabase.insert(HistoryEntry.TABLE_NAME,null,contentValues);
         editText.getText().clear();
     }
 
     private String handleRawText(String rawText){
        return rawText.replace(" ","%20");
     }
+
 }

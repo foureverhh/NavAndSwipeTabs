@@ -127,10 +127,10 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
         }
 
         mCursor = newCursor;
-/*
-        if(mCursor != null){
-            notifyDataSetChanged();
-        }
-*/
+
+       // if(newCursor != null){
+       //    notifyDataSetChanged();
+       //}
+
     }
 }
