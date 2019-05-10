@@ -159,8 +159,11 @@ public class ImageFragment extends Fragment implements CovertImageToBase64,IOCRC
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("ocrResult",ocrResult.toString());
-        textFromPhotoGallery.setText(ocrResult.toString());
+        Log.d("Orc result", "getOCRCallBackResult: "+ocrResult.toString());
+        if(!ocrResult.toString().trim().equals(""))
+            textFromPhotoGallery.setText(ocrResult.toString());
+        else
+            textFromPhotoGallery.setText(getString(R.string.no_result_ocr));
     }
 
     @Override

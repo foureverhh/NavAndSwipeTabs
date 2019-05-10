@@ -21,5 +21,6 @@
     <string name="take_photo">take photo</string>
 
     <string name="no_result_wikepedia">No Result on Wikipedia</string>
+    <string name="no_result_ocr">No texts found in the picture, try another picture.</string>
     <string name="history_title">Your search history:</string>
 </resources>

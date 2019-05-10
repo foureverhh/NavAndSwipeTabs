@@ -236,7 +236,10 @@ public class CameraFragment extends Fragment implements CovertImageToBase64,IOCR
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        textView.setText(ocrResult.toString());
+        if(ocrResult.toString().trim().equals(""))
+            textView.setText(ocrResult.toString());
+        else
+            textView.setText(getString(R.string.no_result_ocr));
     }
 
     @Override
