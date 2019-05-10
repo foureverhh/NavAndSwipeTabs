@@ -78,8 +78,9 @@ public class HistoryListViewAdapter extends RecyclerView.Adapter<HistoryListView
             return;
         String keyword = mCursor.getString(mCursor.getColumnIndex(HistoryEntry.COLUMN_NAME_KEYWORD));
         long id = mCursor.getLong(mCursor.getColumnIndex(HistoryEntry._ID));
+        String date = mCursor.getString(mCursor.getColumnIndex(HistoryEntry.COLUMN_TIMESTAMP));
         holder.keyword_tv.setText(keyword);
-        holder.date_tv.setText("Date shows here");
+        holder.date_tv.setText(date);
         holder.itemView.setTag(id);
 
     }
