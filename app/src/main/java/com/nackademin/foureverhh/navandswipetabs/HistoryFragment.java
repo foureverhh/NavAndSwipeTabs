@@ -78,11 +78,11 @@ public class HistoryFragment extends Fragment {
 
     public void removeItem(int position,long databaseId){
 
-        Log.d("Position is", "removeItem: "+position);
+        //Log.d("Position is", "removeItem: "+position);
 
 
-        int deleteResult = historyDatabase.delete(HistoryEntry.TABLE_NAME,HistoryEntry._ID +"="+databaseId,null);
-        Toast.makeText(getContext(),"Result "+deleteResult,Toast.LENGTH_SHORT).show();
+        historyDatabase.delete(HistoryEntry.TABLE_NAME,HistoryEntry._ID +"="+databaseId,null);
+        //Toast.makeText(getContext(),"Result "+deleteResult,Toast.LENGTH_SHORT).show();
         historyListViewAdapter.swapCursor(getAllItems());
         historyListViewAdapter.notifyItemRemoved(position);
 
